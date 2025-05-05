@@ -6,24 +6,29 @@ import (
 	"github.com/AlexsanderHamir/PoolX/src/pool"
 )
 
-func (dcm *DefaultContext) CreatePool(name string, config *pool.PoolConfig, allocator func() any, cleaner func(item any)) (any, error) {
+func (dcm *DefaultContext[T]) CreatePool(name string, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (*pool.Pool[T], error) {
+	dcm.mu.Lock()
+	defer dcm.mu.Unlock()
+
+	if _, ok := dcm.pools[name]; ok {
+		return nil, ErrPoolAlreadyExists
+	}
+
 	pool, err := pool.NewPool(config, allocator, cleaner)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrPoolNotInitialized, err)
 	}
 
-	_, ok := dcm.pools.Load(name)
-	if ok {
-		return nil, ErrPoolAlreadyExists
-	}
-
-	dcm.pools.Store(name, pool)
+	dcm.pools[name] = pool
 
 	return pool, nil
 }
 
-func (dcm *DefaultContext) GetPool(name string) (any, error) {
-	pool, ok := dcm.pools.Load(name)
+func (dcm *DefaultContext[T]) GetPool(name string) (*pool.Pool[T], error) {
+	dcm.mu.RLock()
+	defer dcm.mu.RUnlock()
+
+	pool, ok := dcm.pools[name]
 	if !ok {
 		return nil, ErrPoolNotFound
 	}
@@ -31,7 +36,10 @@ func (dcm *DefaultContext) GetPool(name string) (any, error) {
 	return pool, nil
 }
 
-func (dcm *DefaultContext) GetOrCreatePool(name string, config *pool.PoolConfig, allocator func() any, cleaner func(item any)) (any, error) {
+func (dcm *DefaultContext[T]) GetOrCreatePool(name string, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (*pool.Pool[T], error) {
+	dcm.mu.Lock()
+	defer dcm.mu.Unlock()
+
 	pool, err := dcm.GetPool(name)
 	if err != nil {
 		return dcm.CreatePool(name, config, allocator, cleaner)
@@ -39,6 +47,9 @@ func (dcm *DefaultContext) GetOrCreatePool(name string, config *pool.PoolConfig,
 	return pool, nil
 }
 
-func (dcm *DefaultContext) DeletePool(name string) {
-	dcm.pools.Delete(name)
+func (dcm *DefaultContext[T]) DeletePool(name string) {
+	dcm.mu.Lock()
+	defer dcm.mu.Unlock()
+
+	delete(dcm.pools, name)
 }
