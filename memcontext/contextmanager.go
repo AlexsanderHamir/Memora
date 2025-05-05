@@ -2,30 +2,38 @@ package memcontext
 
 import (
 	"fmt"
-
-	"github.com/AlexsanderHamir/PoolX/src/pool"
 )
 
 func NewContextManager() *DefaultContextManager {
 	return &DefaultContextManager{
-		contexts: make(map[string]any),
+		contexts: make(map[string]*DefaultContext),
 	}
 }
 
-func CreateContext[T any](cm *DefaultContextManager, name string) *DefaultContext[T] {
-	ctx := &DefaultContext[T]{
+// CreateContext creates a new context for the given name, if the context manager is nil,
+// the context will be created, but not stored.
+func CreateContext(cm *DefaultContextManager, name string) *DefaultContext {
+	ctx := &DefaultContext{
 		ctxName: name,
-		pools:   make(map[string]*pool.Pool[T]),
+		pools:   make(map[string]any),
 	}
 
-	cm.mu.Lock()
-	defer cm.mu.Unlock()
-	cm.contexts[name] = ctx
+	if cm != nil {
+		cm.mu.Lock()
+		defer cm.mu.Unlock()
+		cm.contexts[name] = ctx
+	}
 
 	return ctx
 }
 
-func GetContext[T any](dcm *DefaultContextManager, name string) (*DefaultContext[T], error) {
+// GetContext gets the context for the given name, if the context manager is nil,
+// the context will not be returned, because it wasnt stored.
+func GetContext(dcm *DefaultContextManager, name string) (*DefaultContext, error) {
+	if dcm == nil {
+		return nil, ErrContextManagerNil
+	}
+
 	dcm.mu.RLock()
 	defer dcm.mu.RUnlock()
 
@@ -34,19 +42,21 @@ func GetContext[T any](dcm *DefaultContextManager, name string) (*DefaultContext
 		return nil, fmt.Errorf("context %s not found", name)
 	}
 
-	ctx, ok := val.(*DefaultContext[T])
-	if !ok {
-		return nil, fmt.Errorf("context %s has unexpected type", name)
-	}
-
-	return ctx, nil
+	return val, nil
 }
 
-func GetOrCreateContext[T any](dcm *DefaultContextManager, name string) (*DefaultContext[T], error) {
-	ctx, err := GetContext[T](dcm, name)
-	if err != nil {
-		return CreateContext[T](dcm, name), nil
+// GetOrCreateContext gets the context for the given name, if the context manager is nil,
+// the context will be created, but not stored.
+func GetOrCreateContext(dcm *DefaultContextManager, name string) (*DefaultContext, error) {
+	if dcm == nil {
+		return CreateContext(dcm, name), nil
 	}
+
+	ctx, err := GetContext(dcm, name)
+	if err != nil {
+		return CreateContext(dcm, name), nil
+	}
+
 	return ctx, nil
 }
 

@@ -2,17 +2,15 @@ package memcontext
 
 import (
 	"sync"
-
-	"github.com/AlexsanderHamir/PoolX/src/pool"
 )
 
 type DefaultContextManager struct {
 	mu       sync.RWMutex
-	contexts map[string]any
+	contexts map[string]*DefaultContext
 }
 
-type DefaultContext[T any] struct {
+type DefaultContext struct {
 	mu      sync.RWMutex
 	ctxName string
-	pools   map[string]*pool.Pool[T]
+	pools   map[string]any
 }
