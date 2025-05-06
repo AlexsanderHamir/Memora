@@ -2,9 +2,11 @@ package memcontext
 
 import (
 	"fmt"
+	"reflect"
 )
 
-func NewContextManager() *DefaultContextManager {
+// NewContextManager creates a new context manager
+func NewContextManager() ContextManager {
 	return &DefaultContextManager{
 		contexts: make(map[string]*DefaultContext),
 	}
@@ -12,32 +14,26 @@ func NewContextManager() *DefaultContextManager {
 
 // CreateContext creates a new context for the given name, if the context manager is nil,
 // the context will be created, but not stored.
-func CreateContext(cm *DefaultContextManager, name string) *DefaultContext {
+func (cm *DefaultContextManager) CreateContext(name string) *DefaultContext {
 	ctx := &DefaultContext{
 		ctxName: name,
-		pools:   make(map[string]any),
+		pools:   make(map[reflect.Type]any),
 	}
 
-	if cm != nil {
-		cm.mu.Lock()
-		defer cm.mu.Unlock()
-		cm.contexts[name] = ctx
-	}
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.contexts[name] = ctx
 
 	return ctx
 }
 
 // GetContext gets the context for the given name, if the context manager is nil,
 // the context will not be returned, because it wasnt stored.
-func GetContext(dcm *DefaultContextManager, name string) (*DefaultContext, error) {
-	if dcm == nil {
-		return nil, ErrContextManagerNil
-	}
+func (cm *DefaultContextManager) GetContext(name string) (*DefaultContext, error) {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
 
-	dcm.mu.RLock()
-	defer dcm.mu.RUnlock()
-
-	val, ok := dcm.contexts[name]
+	val, ok := cm.contexts[name]
 	if !ok {
 		return nil, fmt.Errorf("context %s not found", name)
 	}
@@ -47,22 +43,37 @@ func GetContext(dcm *DefaultContextManager, name string) (*DefaultContext, error
 
 // GetOrCreateContext gets the context for the given name, if the context manager is nil,
 // the context will be created, but not stored.
-func GetOrCreateContext(dcm *DefaultContextManager, name string) (*DefaultContext, error) {
-	if dcm == nil {
-		return CreateContext(dcm, name), nil
-	}
-
-	ctx, err := GetContext(dcm, name)
+func (cm *DefaultContextManager) GetOrCreateContext(name string) (*DefaultContext, error) {
+	ctx, err := cm.GetContext(name)
 	if err != nil {
-		return CreateContext(dcm, name), nil
+		return cm.CreateContext(name), nil
 	}
 
 	return ctx, nil
 }
 
-func (dcm *DefaultContextManager) DeleteContext(name string) {
-	dcm.mu.Lock()
-	defer dcm.mu.Unlock()
+// DeleteContext deletes the context for the given name, if the context manager is nil,
+// the context will not be deleted, because it wasnt stored.
+func (cm *DefaultContextManager) DeleteContext(name string) {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
 
-	delete(dcm.contexts, name)
+	ctx, err := cm.GetContext(name)
+	if err != nil {
+		return
+	}
+
+	ctx.ClosePools()
+	delete(cm.contexts, name)
+}
+
+// deletes all contexts
+func (cm *DefaultContextManager) DeleteAllContexts() {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+
+	for _, ctx := range cm.contexts {
+		ctx.ClosePools()
+		delete(cm.contexts, ctx.ctxName)
+	}
 }
