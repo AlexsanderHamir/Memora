@@ -1,4 +1,6 @@
 github.com/AlexsanderHamir/PoolX v1.3.1 h1:3rAJ0a1J+ZPZJk2arAUHFHY/l34LW8U1S6bMzKe18XM=
 github.com/AlexsanderHamir/PoolX v1.3.1/go.mod h1:NCrCNO/9AEARpywvB81yEtzeVh+yV1lrVYL53904iQ0=
+github.com/AlexsanderHamir/PoolX v1.4.0 h1:9em7a4d+IKqwKvwP3bKK+kq73wh1KJqMMyiQMlCWK6A=
+github.com/AlexsanderHamir/PoolX v1.4.0/go.mod h1:tkeGI5fhdouQC57PnFcpYWNdcY+LQ/JQxlUvK+o2ZzM=
 github.com/AlexsanderHamir/ringbuffer v0.2.0 h1:wCAsKt2pNavBBp1ysK7YMyfLTEdd6SiRMpPbtiqHde8=
 github.com/AlexsanderHamir/ringbuffer v0.2.0/go.mod h1:UpBAfNTdQ9cjARbBdiMEOJwkQFHCmgjR83L++Q0Y2UI=

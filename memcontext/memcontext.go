@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/AlexsanderHamir/PoolX/src/pool"
+	"github.com/AlexsanderHamir/PoolX/pool"
 )
 
 // Creates a new pool in the context
-func CreatePool[T any](dc *DefaultContext, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (*pool.Pool[T], error) {
+func CreatePool[T any](dc *DefaultContext, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (pool.PoolObj[T], error) {
 	dc.mu.Lock()
 	defer dc.mu.Unlock()
 
@@ -47,7 +47,7 @@ func GetPool[T any](dc *DefaultContext) (*pool.Pool[T], error) {
 }
 
 // Gets a pool from the context, if the pool does not exist, it creates a new one
-func GetOrCreatePool[T any](dc *DefaultContext, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (*pool.Pool[T], error) {
+func GetOrCreatePool[T any](dc *DefaultContext, config *pool.PoolConfig, allocator func() T, cleaner func(T)) (pool.PoolObj[T], error) {
 	dc.mu.Lock()
 	defer dc.mu.Unlock()
 

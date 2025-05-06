@@ -10,6 +10,7 @@ type ContextManager interface {
 	GetContext(name string) (*DefaultContext, error)
 	GetOrCreateContext(name string) (*DefaultContext, error)
 	DeleteContext(name string)
+	DeleteAllContexts()
 }
 
 type DefaultContextManager struct {
