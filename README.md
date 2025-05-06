@@ -4,9 +4,10 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/AlexsanderHamir/Memora)](https://goreportcard.com/report/github.com/AlexsanderHamir/Memora)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+An object pool manager to facilitate the allocation and deallocation of correlated objects.
+
 ![Memora Example](example.png)
 
-An object pool manager to facilitate the allocation and deallocation of memory.
 
 ## Overview
 
@@ -28,7 +29,7 @@ For a complete working example, see `code_example.go`.
 ```go
 import (
 	"github.com/AlexsanderHamir/Memora/memcontext"
-	"github.com/AlexsanderHamir/PoolX/src/pool"
+	"github.com/AlexsanderHamir/PoolX/pool"
 )
 
 // Create a context manager
