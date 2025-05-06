@@ -18,8 +18,8 @@ For more details about the underlying pool implementation, check out [PoolX](htt
 
 - Context-aware object pool management
 - Generic type support
-- Custom allocators and cleaners
 - Thread-safe operations
+- Built-in allocators and cleaners
 
 ## Usage
 
@@ -28,7 +28,7 @@ For a complete working example, see `code_example.go`.
 ```go
 import (
 	"github.com/AlexsanderHamir/Memora/memcontext"
-	"github.com/AlexsanderHamir/PoolX/src/pool"
+	"github.com/AlexsanderHamir/PoolX/pool"
 )
 
 // Create a context manager
@@ -76,6 +76,9 @@ type ContextManager interface {
 
     // DeleteContext removes a context and its associated pools
     DeleteContext(name string)
+
+    // DeleteAllContexts removes all contexts and their associated pools
+    DeleteAllContexts()
 }
 ```
 

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/AlexsanderHamir/Memora/memcontext"
-	"github.com/AlexsanderHamir/PoolX/src/pool"
+	"github.com/AlexsanderHamir/PoolX/pool"
 )
 
 type Tuple struct {
@@ -54,9 +54,9 @@ func main() {
 	bufferPool := mustCreatePool(ctx, bufferAllocator, bufferCleaner)
 
 	// Acquire pooled objects
-	tuple := mustGet(tuplePool)
-	reader := mustGet(readerPool)
-	buffer := mustGet(bufferPool)
+	tuple := mustGetObj(tuplePool)
+	reader := mustGetObj(readerPool)
+	buffer := mustGetObj(bufferPool)
 
 	// Serialize tuple into buffer
 	buffer.WriteString(fmt.Sprintf("ID=%d;Value=%s;Data=%s", tuple.ID, tuple.Value, string(tuple.Data)))
@@ -71,14 +71,22 @@ func main() {
 	// Simulate processing delay
 	time.Sleep(100 * time.Millisecond)
 
+	// if want to use the obj again use the cleaner function
+	tupleCleaner(tuple)
+	readerCleaner(reader)
+	bufferCleaner(buffer)
+
 	// Return objects to their pools
+	// The cleaner is called inside the put method, no need to call it before.
 	tuplePool.Put(tuple)
 	readerPool.Put(reader)
 	bufferPool.Put(buffer)
+
+	rw.cm.DeleteAllContexts()
 }
 
 // mustCreatePool creates a pool or panics on error.
-func mustCreatePool[T any](ctx *memcontext.DefaultContext, alloc func() T, clean func(T)) *pool.Pool[T] {
+func mustCreatePool[T any](ctx *memcontext.DefaultContext, alloc func() T, clean func(T)) pool.PoolObj[T] {
 	config, err := pool.NewPoolConfigBuilder().Build()
 	if err != nil {
 		panic(err)
@@ -92,7 +100,7 @@ func mustCreatePool[T any](ctx *memcontext.DefaultContext, alloc func() T, clean
 }
 
 // mustGet acquires an object from the pool or panics on error.
-func mustGet[T any](p *pool.Pool[T]) T {
+func mustGetObj[T any](p pool.PoolObj[T]) T {
 	obj, err := p.Get()
 	if err != nil {
 		panic(err)
