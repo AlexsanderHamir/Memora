@@ -24,11 +24,22 @@ For more details about the underlying pool implementation, check out [PoolX](htt
 For a complete working example, see `code_example.go`.
 
 ```go
+import (
+	"github.com/AlexsanderHamir/Memora/memcontext"
+	"github.com/AlexsanderHamir/PoolX/src/pool"
+)
+
 // Create a context manager
 cm := memcontext.NewContextManager()
 
 // Create a context
 ctx := cm.CreateContext("myContext")
+
+// pool configuration
+config, err := pool.NewPoolConfigBuilder().Build()
+	if err != nil {
+		panic(err)
+}
 
 // Create a pool with custom allocator and cleaner
 pool, err := memcontext.CreatePool(ctx, config, allocator, cleaner)

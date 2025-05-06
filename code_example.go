@@ -79,11 +79,12 @@ func main() {
 
 // mustCreatePool creates a pool or panics on error.
 func mustCreatePool[T any](ctx *memcontext.DefaultContext, alloc func() T, clean func(T)) *pool.Pool[T] {
-	cfg, err := pool.NewPoolConfigBuilder().Build()
+	config, err := pool.NewPoolConfigBuilder().Build()
 	if err != nil {
 		panic(err)
 	}
-	p, err := memcontext.CreatePool(ctx, cfg, alloc, clean)
+
+	p, err := memcontext.CreatePool(ctx, config, alloc, clean)
 	if err != nil {
 		panic(err)
 	}
