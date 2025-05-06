@@ -1,3 +1,0 @@
-package memcontext
-
-// Internal helpers
