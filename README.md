@@ -8,10 +8,9 @@ An object pool manager to facilitate the allocation and deallocation of correlat
 
 ![Memora Example](example.png)
 
-
 ## Overview
 
-Memora provides a simple way to manage object pools with context-aware resource allocation and cleanup. It's designed to optimize memory usage and improve performance in applications that frequently create and destroy related objects.
+Memora is a powerful object pool management library that provides context-aware resource allocation and cleanup. It's designed for applications that need to efficiently manage multiple object pools, particularly when dealing with related objects that have interdependencies. A common use case is managing pools of row objects alongside their associated buffers used for encoding/decoding operations, ensuring optimal memory usage and performance.
 
 For more details about the underlying pool implementation, check out [PoolX](https://github.com/AlexsanderHamir/PoolX).
 
