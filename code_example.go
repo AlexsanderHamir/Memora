@@ -46,7 +46,7 @@ func main() {
 	rw := &RealWorld{}
 	rw.cm = memcontext.NewContextManager()
 
-	ctx := rw.cm.CreateContext("example")
+	ctx := rw.cm.CreateContext("row_group_example")
 
 	// Create object pools
 	tuplePool := mustCreatePool(ctx, tupleAllocator, tupleCleaner)

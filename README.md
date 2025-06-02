@@ -4,16 +4,16 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/AlexsanderHamir/Memora)](https://goreportcard.com/report/github.com/AlexsanderHamir/Memora)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Memora is a lightweight manager for correlated object pools. It provides context-based grouping and cleanup for multiple pools used together (e.g., row + buffer).
+Memora is a lightweight manager for correlated object pools for [PoolX](https://github.com/AlexsanderHamir/PoolX). It provides context-based grouping and cleanup for multiple pools used together (e.g., row + buffer).
 
 ![Memora Example](example.png)
 
 ## Features
 
-* Group pools under named contexts
-* Thread-safe
-* Generic type support
-* Custom allocators and cleaners
+- Group pools under named contexts
+- Thread-safe
+- Generic type support
+- Custom allocators and cleaners
 
 ## Install
 
@@ -72,4 +72,3 @@ I built only what I needed. PRs for additional features or optimizations are wel
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
