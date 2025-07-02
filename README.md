@@ -6,6 +6,8 @@
 
 Memora is a lightweight manager for correlated object pools for [PoolX](https://github.com/AlexsanderHamir/PoolX). It provides context-based grouping and cleanup for multiple pools used together (e.g., row + buffer).
 
+> This kind of pooling strategy only makes sense at the scale of a database or similarly memory-intensive systems. For most other use cases, it would likely be unnecessary and over-engineered.
+
 ![Memora Example](example.png)
 
 ## Features
